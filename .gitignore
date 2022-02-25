@@ -1,3 +1,9 @@
+# coverdle-discord-bot-specific
+ids.json
+*.ipynb_checkpoints
+*.ipynb
+*ideas.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
