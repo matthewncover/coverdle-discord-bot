@@ -3,7 +3,7 @@ ids.json
 *.ipynb_checkpoints
 *.ipynb
 *ideas.txt
-coverdle_data.csv
+*.csv
 discord_tools.txt
 
 # Byte-compiled / optimized / DLL files
