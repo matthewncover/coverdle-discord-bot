@@ -6,36 +6,21 @@ import pandas as pd, re, json, numpy as np
 import datetime as dt
 from dateutil.relativedelta import relativedelta
 
+import warnings
+warnings.simplefilter('ignore')
+
 id_dict = json.load(open("ids.json"))
 
 class CoverdleClient(discord.Client):
 
-    # def __init__(self):
-
-    #     # self.bot_cmd = commands.Bot(command_prefix = '$420')
-    #     self.ass_eating = "all day"
-
     def on_command(self, msg):
-
-        # self.bot_cmd = commands.Bot(command_prefix="$420")
-
-        # @commands.command()
-        # async def request_history(context, *args):
-
-        #     await context.send(f'{len(args)}')
-
-        # self.bot_cmd.add_command(request_history)
-        
 
         self.cmd_args = msg.content.split(' ')[1:]
         self.cmd_arg_primary = self.cmd_args[0]
 
-        self.report = Reporting(self.cmd_args)
+        self.report_obj = Reporting(self.cmd_args)
+        self.report = self.report_obj.report_msg
 
-        # if self.cmd_arg_primary == 'history':
-            
-            # self.report = Reporting(self.cmd_args)
-            # pass
 
     def on_wordle_entry(self, msg):
 
@@ -43,7 +28,7 @@ class CoverdleClient(discord.Client):
 
         try:
             self.author_name = id_dict['author-ids'][self.author]
-        except:
+        except KeyError:
             self.author_name = "Who?"
         
         self.msg_day = msg.created_at.strftime("%Y%m%d")
@@ -133,23 +118,29 @@ class CoverdleClient(discord.Client):
         #####################################
         # first, checks db and updates with history
 
-        for m in msg.channel.history():
-            print(m)
+        hist = msg.channel.history()
+        pass
 
         #####################################
 
+        # ignore if the bot sent the message
         if msg.author == client.user:
             return None
 
+        # ignore if message is not in wordle channel
         if msg.channel.name != 'wordle':
             return None
 
+        # trigger command
         if msg.content.startswith("$420"):
             self.on_command(msg)
+
+            await msg.channel.send(self.report)
 
         self.which_game(msg)
         self.rdle_names = ["Wordle", "Worldle", "Nerdle", "Quordle"]
 
+        # add to 
         if max(self.rdle_bools) == 1:
             self.on_wordle_entry(msg)
 
@@ -157,21 +148,26 @@ class CoverdleClient(discord.Client):
         else:
             return None
         
-        
 
 class Reporting:
 
     def __init__(self, cmd_args:list):
 
-        self.df = CoverdleClient.read_coverdle_data()
-        self.df.date = pd.to_datetime(self.df.date)
+        self.df = pd.read_csv("./coverdle_data.csv")
+        self.df.day = pd.to_datetime(self.df.day)
 
         self.report_msg = ''
 
         self.game_filter = cmd_args[0]
         self.stats_filter = cmd_args[1]
-        self.date_filter = dt.datetime.strptime(cmd_args[2], "%b%y")
+        if cmd_args[2] != 'all_time':
+            self.date_filter = dt.datetime.strptime(cmd_args[2], "%b%y")
+        else:
+            self.date_filter = cmd_args[2]
+        
         self.define_fn_dicts()
+
+        self.compile_report()
         
     def define_fn_dicts(self):
 
@@ -179,16 +175,20 @@ class Reporting:
         #     "all_games": 
         # }
 
-        self.stats_fn_dict = {
+        self.stats_fns = {
             "all_stats": self.all_stats,
             "user_performance": self.user_performance,
             "game_popularity": self.game_popularity,
             "team_performance": self.team_performance,
+            "stoke_meter": self.stoke_meter
         }
-        self.date_filter_fn_dict = {
-            "all_time": self.unspecified_date,
-            self.date_filter: self.specified_month
-        }
+        # self.date_filter_fns = {
+        #     "all_time": self.unspecified_date,
+        #     self.date_filter: self.specified_month
+        # }
+
+        pass
+
 
 
     def specified_game(self):
@@ -201,7 +201,7 @@ class Reporting:
 
         self.df = (
             self.df[
-                self.df.game.isin(games)
+                self.df.game.str.lower().isin(games)
             ]
         )
 
@@ -215,34 +215,126 @@ class Reporting:
 
         self.df = (
             self.df[
-                (self.df.date >= self.date_filter) &
-                (self.df.date < one_month_before)
+                (self.df.day >= self.date_filter) &
+                (self.df.day < one_month_before)
             ]
         )
 
-    def unspecified_date(self):
-
-        pass
 
     def user_performance(self):
 
-        pass
+        self.df_pass = self.df[self.df.score != 'X']
+        self.df_pass.score = self.df_pass.score.astype(np.float16)
+
+        def typical(x):
+
+            return x.value_counts().index[0]
+
+        self.user_performance_stats = (
+            self.df_pass
+            .groupby(['name', 'game'])
+            .agg({
+                'score': ['mean', 'min', typical, 'size']
+                })
+                .rename(columns = {
+                    'mean': 'avg.',
+                    'min': 'best',
+                    'size': 'count'
+                    })
+        ).to_string()
+
+        self.report_msg += f"""\n
+        ===User Performance===\n
+        {self.user_performance_stats}
+        """
+
+    def stoke_meter(self):
+        # (num games done) / (X days of that month)
+        # possible to have 400% stoke level
+
+        if self.date_filter == 'all_time':
+            self.report_msg += """\n
+            ===Stoke Meter===\n
+            Stoke meter stats not available for 'all_time'.
+            """
+            return
+
+        self.stoke_meter_stats = (
+            (
+                self.df.name.value_counts() / (
+                    self.date_filter + relativedelta(months=1) - relativedelta(days=1)
+                ).day * 100
+                )
+                .astype(str)
+                + ' %'
+        ).to_string()
+
+        self.report_msg += f"""\n
+        ===Stoke Meter===\n
+        {self.stoke_meter_stats}
+        """
+
 
     def game_popularity(self):
 
-        pass
+        self.game_popularity_stats = (
+            self.df.game
+            .value_counts().astype(str) 
+            + ' (' + (
+                self.df.game.value_counts() / self.df.shape[0] * 100
+                )
+                .astype(int)
+                .astype(str)
+                 + ' %)'
+        ).to_string(index=False)
+
+        self.report_msg += f"""\n
+        ===Game Popularity===\n
+        {self.game_popularity_stats}
+        """
 
     def team_performance(self):
 
-        pass
+        self.df_pass = self.df[self.df.score != 'X']
+        self.df_pass.score = self.df_pass.score.astype(np.float16)
+
+        self.team_performance_stats = (
+            self.df_pass
+            .score
+            .describe()
+            .round(3)
+            .loc[
+                ["count", "mean", "std",
+                 "25%", "50%", "75%"]
+            ]
+        ).to_string()
+
+        self.report_msg += f"""\n
+        ===Team Performance===\n
+        {self.team_performance_stats}
+        """
 
     def all_stats(self):
 
-        pass
+        self.game_popularity()
+        self.stoke_meter()
+        self.team_performance()
+        self.user_performance()
 
     def compile_report(self):
 
-        pass
+        self.report_msg += f"""\n
+        {self.game_filter}: {self.stats_filter}\n
+        {self.date_filter}
+        """
+
+        self.specified_game()
+        
+        if self.date_filter != 'all_time':
+            self.specified_month()
+
+        self.stats_fns[self.stats_filter]()
+        
 
 
 client = CoverdleClient()
