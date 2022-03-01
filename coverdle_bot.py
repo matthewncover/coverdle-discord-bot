@@ -7,7 +7,7 @@ from wordle_reports import Reporting
 import warnings
 warnings.simplefilter('ignore')
 
-id_dict = json.load(open("ids.json"))
+id_dict = json.load(open("ids_aof.json"))
 
 class CoverdleClient(discord.Client):
 
@@ -117,15 +117,18 @@ class CoverdleClient(discord.Client):
                 .replace('\n', '')
             )
 
-            self.quordle_scores = (
-                [
-                    "X" if z == '\U0001f7e5' else int(z)
-                    for z in [
-                        x for x in list(quordle_message_score_contents)
-                        if x not in ('️', '⃣')
-                        ]
-                ]
-            )
+            try:
+                self.quordle_scores = (
+                    [
+                        "X" if z == '\U0001f7e5' else int(z)
+                        for z in [
+                            x for x in list(quordle_message_score_contents)
+                            if x not in ('️', '⃣')
+                            ]
+                    ]
+                )
+            except:
+                self.quordle_scores = ["X", "X", "X", "X"]
 
             # convert to max score of 6 scale
             self.score = (
@@ -170,7 +173,7 @@ class CoverdleClient(discord.Client):
             self.which_game(h)
 
             if max(self.rdle_bools) == 1:
-                
+
                 hist_name = id_dict['author-ids'][f"{h.author.name}#{h.author.discriminator}"]
                 hist_day = int(h.created_at.strftime("%Y%m%d"))
                 hist_game = self.rdle_names[self.rdle_bools.index(True)]
