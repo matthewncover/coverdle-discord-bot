@@ -10,7 +10,7 @@ class Reporting:
 
     def __init__(self, cmd_args:list):
 
-        # try:
+        try:
             self.df0 = pd.read_csv("./coverdle_data.csv")
             self.df0.day = pd.to_datetime(self.df0.day, format='%Y%m%d')
             self.df = self.df0.copy()
@@ -27,12 +27,12 @@ class Reporting:
             self.define_fn_dicts()
 
             self.compile_report()
-        # except:
+        except:
 
-        #     self.report_msg = """\n
-        #     Something has gone wrong. One of us done goofed.
-        #     Type "$420 help" for a list of commands.
-        #     """
+            self.report_msg = """\n
+            Something has gone wrong. One of us done goofed.
+            Type "$420 help" for a list of commands.
+            """
         
     def define_fn_dicts(self):
 

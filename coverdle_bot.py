@@ -35,7 +35,7 @@ class CoverdleClient(discord.Client):
     def invalid_command(self, cmd_arg:str):
 
         return f"""
-        {cmd_arg} is an invalid command.
+        {cmd_arg} is an invalid command in that position.
         Type "{self.cmd_start_str} help" for a list of commands.
         """
 
@@ -127,7 +127,11 @@ class CoverdleClient(discord.Client):
                 ]
             )
 
-            self.score = np.array(self.quordle_scores).mean()*(2/3) # convert to max score of 6 scale
+            # convert to max score of 6 scale
+            self.score = (
+                'X' if 'X' in self.quordle_scores
+                else np.array(self.quordle_scores).mean()*(2/3)
+                ) 
 
 
     def append_data(self):
@@ -149,13 +153,32 @@ class CoverdleClient(discord.Client):
 
     async def on_message(self, msg):
 
-        #####################################
+        self.read_coverdle_data()
+        self.rdle_names = ["Wordle", "Worldle", "Nerdle", "Quordle"]
+
         # first, checks db and updates with history
+        self.last_entry = self.df.loc[self.df.shape[0]-1, ['name', 'day', 'game']].values.tolist()
+        hist = msg.channel.history(limit=1000)
+        async for h in hist:
 
-        hist = msg.channel.history()
-        pass
+            if h.author == client.user:
+                continue
 
-        #####################################
+            if h.channel.name != 'wordle':
+                continue
+
+            self.which_game(h)
+
+            if max(self.rdle_bools) == 1:
+                
+                hist_name = id_dict['author-ids'][f"{h.author.name}#{h.author.discriminator}"]
+                hist_day = int(h.created_at.strftime("%Y%m%d"))
+                hist_game = self.rdle_names[self.rdle_bools.index(True)]
+
+                if self.last_entry == [hist_name, hist_day, hist_game]:
+                    break
+                else:
+                    self.on_wordle_entry(h)
 
         # ignore if the bot sent the message
         if msg.author == client.user:
@@ -174,7 +197,6 @@ class CoverdleClient(discord.Client):
             await msg.channel.send(self.report)
 
         self.which_game(msg)
-        self.rdle_names = ["Wordle", "Worldle", "Nerdle", "Quordle"]
 
         # add to 
         if max(self.rdle_bools) == 1:
