@@ -134,7 +134,7 @@ class CoverdleClient(discord.Client):
 
         if (
             self.df[
-                (self.df.author == self.author)
+                (self.df.name == self.author_name)
                  & (self.df.day == int(self.msg_day))
                  & (self.df.game == self.game)
                  ].shape[0]

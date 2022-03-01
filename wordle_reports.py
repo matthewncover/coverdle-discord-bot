@@ -1,4 +1,5 @@
 import pandas as pd, numpy as np, datetime as dt
+from table2ascii import table2ascii as t2a, PresetStyle
 
 from dateutil.relativedelta import relativedelta
 
@@ -9,12 +10,12 @@ class Reporting:
 
     def __init__(self, cmd_args:list):
 
-        try:
+        # try:
             self.df0 = pd.read_csv("./coverdle_data.csv")
             self.df0.day = pd.to_datetime(self.df0.day, format='%Y%m%d')
             self.df = self.df0.copy()
 
-            self.report_msg = ''
+            self.report_msg = '```\n'
 
             self.game_filter = cmd_args[0]
             self.stats_filter = cmd_args[1]
@@ -26,12 +27,12 @@ class Reporting:
             self.define_fn_dicts()
 
             self.compile_report()
-        except:
+        # except:
 
-            self.report_msg = """\n
-            Something has gone wrong. One of us done goofed.
-            Type "$420 help" for a list of commands.
-            """
+        #     self.report_msg = """\n
+        #     Something has gone wrong. One of us done goofed.
+        #     Type "$420 help" for a list of commands.
+        #     """
         
     def define_fn_dicts(self):
 
@@ -87,6 +88,18 @@ class Reporting:
             return True
         else:
             return False
+
+    def stats_t2a(self, df, colnames):
+
+        df = df.reset_index()
+        df.columns = colnames
+
+        return t2a(
+            header = df.columns.tolist(),
+            body = df.values.tolist(),
+            style = PresetStyle.thin_compact,
+            first_col_heading = True
+        )
     
     def user_performance(self):
 
@@ -120,7 +133,7 @@ class Reporting:
 
         self.report_msg += f"""
         ===User Performance===
-        {self.user_performance_stats.to_string()}
+        \n{self.user_performance_stats.to_string()}
         """
 
     def stoke_meter(self):
@@ -144,8 +157,9 @@ class Reporting:
         if self.no_data(self.stoke_meter_stats):
             return
 
-        self.report_msg += f"""===Stoke Meter===
-        {self.stoke_meter_stats.to_string()}
+        self.report_msg += f"""
+        ===Stoke Meter===
+        \n{self.stats_t2a(self.stoke_meter_stats, colnames=['Name', 'Stoke Level'])}
         """
 
 
@@ -183,7 +197,7 @@ class Reporting:
         self.report_msg += f"""
         ===Game Popularity===
         Number of games played (% of total)
-        {self.game_popularity_stats.to_string(index=True)}
+        \n{self.stats_t2a(self.game_popularity_stats, colnames=['Game', 'Num Games (% of Total)'])}
         """
 
     def team_performance(self):
@@ -198,23 +212,21 @@ class Reporting:
             .round(3)
             .loc[
                 ["count", "mean", "std",
-                 "25%", "50%", "75%"]
+                 "min", "25%", "50%", "75%"]
             ]
         )
         
         if self.no_data(self.team_performance_stats):
             return
 
-        self.team_accuracy = f"""
-        {round(
+        self.team_accuracy = f"""{round(
             self.df_pass.shape[0] / self.df.shape[0] * 100, 2
-        )} %
+            )} %
         """
         self.report_msg += f"""
         ===Team Performance===
-        Num games, average score, score standard deviation, quartiles
-        {self.team_performance_stats.to_string()}
-        Team win rate: {self.team_accuracy}
+        \n{self.stats_t2a(self.team_performance_stats, colnames = ['Stat', 'Value'])}
+        \nTeam win rate: {self.team_accuracy}
         """
 
     def all_stats(self):
@@ -245,12 +257,14 @@ class Reporting:
         if (self.date_filter == 'all_time') & (self.stats_filter in ['all_stats', 'stoke_meter']):
             self.report_msg += '\nStoke meter stats not available for all time.'
 
+        self.report_msg += "```"
+
         pass
 
     
 if __name__ == '__main__':
 
-    msg = '$420 all_games user_performance Mar22'
+    msg = '$420 all_games game_popularity all_time'
 
     cmd_args = msg.split(' ')[1:]
     rep = Reporting(cmd_args)
