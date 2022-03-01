@@ -23,7 +23,11 @@ class CoverdleClient(discord.Client):
             self.cmd_args, list(id_dict['cmd-args'].keys())
             ):
             if not cmd_arg in id_dict['cmd-args'][arg_name]:
-                self.report = self.invalid_command(cmd_arg)
+                try:
+                    pd.to_datetime([self.cmd_args[2]], format='%b%y')
+                except:
+                    self.report = self.invalid_command(cmd_arg)
+                    return
 
         self.report_obj = Reporting(self.cmd_args)
         self.report = self.report_obj.report_msg
@@ -31,15 +35,15 @@ class CoverdleClient(discord.Client):
     def invalid_command(self, cmd_arg:str):
 
         return f"""
-        {cmd_arg} is an invalid command.\n
-        Type "$420 help" for a list of commands.
+        {cmd_arg} is an invalid command.
+        Type "{self.cmd_start_str} help" for a list of commands.
         """
 
     def help_command(self):
 
-        return """
-        Command format:\n
-        $420 <game option> <stat option> <date option>
+        return f"""
+        Command format:
+        {self.cmd_start_str} <game option> <stat option> <date option>
 
         game options:
             all_games, wordle, worldle, nerdle, quordle
@@ -51,8 +55,9 @@ class CoverdleClient(discord.Client):
         date options:
             all_time, abbreviated month-year (ex. Feb22)
 
-        example:
-            $420 quordle user_performance all_time
+        examples:
+            {self.cmd_start_str} quordle user_performance all_time
+            {self.cmd_start_str} all_games stoke_meter Mar22
         """
 
     def on_wordle_entry(self, msg):
@@ -75,10 +80,6 @@ class CoverdleClient(discord.Client):
 
         self.df = pd.read_csv("./coverdle_data.csv")
 
-        # self.df.date = pd.to_datetime(self.df.date)
-        # self.df.time = pd.to_datetime(self.df.time)
-
-        pass
 
     def which_game(self, msg):
 
@@ -164,8 +165,10 @@ class CoverdleClient(discord.Client):
         if msg.channel.name != 'wordle':
             return None
 
+        self.cmd_start_str = "$420"
+
         # trigger command
-        if msg.content.startswith("$420"):
+        if msg.content.startswith(self.cmd_start_str):
             self.on_command(msg)
 
             await msg.channel.send(self.report)

@@ -29,7 +29,7 @@ class Reporting:
         except:
 
             self.report_msg = """\n
-            Something has gone wrong. One of us done goofed.\n
+            Something has gone wrong. One of us done goofed.
             Type "$420 help" for a list of commands.
             """
         
@@ -78,6 +78,16 @@ class Reporting:
             )
 
 
+    def no_data(self, df):
+
+        if df.shape[0] == 0:
+            self.report_msg += """
+            Sheeeit. No data.
+            """
+            return True
+        else:
+            return False
+    
     def user_performance(self):
 
         self.df_pass = self.df[self.df.score != 'X']
@@ -98,11 +108,19 @@ class Reporting:
                     'min': 'best',
                     'size': 'count'
                     })
-        ).round(2).to_string()
+        )
 
-        self.report_msg += f"""\n
-        ===User Performance===\n
-        {self.user_performance_stats}
+        for subcol in ['avg.', 'best', 'typical']:
+            self.user_performance_stats[('score', subcol)] = [
+                round(x, 2) for x in self.user_performance_stats[('score', subcol)]
+            ]
+
+        if self.no_data(self.user_performance_stats):
+            return
+
+        self.report_msg += f"""
+        ===User Performance===
+        {self.user_performance_stats.to_string()}
         """
 
     def stoke_meter(self):
@@ -121,10 +139,13 @@ class Reporting:
                 .astype(int)
                 .astype(str)
                 + ' %'
-        ).to_string()
+        )
+        
+        if self.no_data(self.stoke_meter_stats):
+            return
 
-        self.report_msg += f"""===Stoke Meter===\n
-        {self.stoke_meter_stats}
+        self.report_msg += f"""===Stoke Meter===
+        {self.stoke_meter_stats.to_string()}
         """
 
 
@@ -154,13 +175,15 @@ class Reporting:
                     + ' %)'
                     )
                 .dropna()
-                .to_string(index=True)
             )
 
-        self.report_msg += f"""\n
-        ===Game Popularity===\n
-        Number of games played (% of total)\n
-        {self.game_popularity_stats}
+        if self.no_data(self.game_popularity_stats):
+            return
+
+        self.report_msg += f"""
+        ===Game Popularity===
+        Number of games played (% of total)
+        {self.game_popularity_stats.to_string(index=True)}
         """
 
     def team_performance(self):
@@ -177,17 +200,20 @@ class Reporting:
                 ["count", "mean", "std",
                  "25%", "50%", "75%"]
             ]
-        ).to_string()
+        )
+        
+        if self.no_data(self.team_performance_stats):
+            return
 
         self.team_accuracy = f"""
         {round(
             self.df_pass.shape[0] / self.df.shape[0] * 100, 2
         )} %
         """
-        self.report_msg += f"""\n
-        ===Team Performance===\n
-        Num games, average score, score standard deviation, quartiles\n
-        {self.team_performance_stats}\n
+        self.report_msg += f"""
+        ===Team Performance===
+        Num games, average score, score standard deviation, quartiles
+        {self.team_performance_stats.to_string()}
         Team win rate: {self.team_accuracy}
         """
 
@@ -205,8 +231,8 @@ class Reporting:
             else self.date_filter.strftime("%B %Y")
         )
 
-        self.report_msg += f"""\n
-        {str.capitalize(self.game_filter)}: {self.stats_filter.replace('_', ' ')} ({date_filter_string})
+        self.report_msg += f"""
+        {str.capitalize(self.game_filter).replace('_', ' ')}: {self.stats_filter.replace('_', ' ')} ({date_filter_string})
         """
 
         self.specified_game()
@@ -216,7 +242,7 @@ class Reporting:
 
         self.stats_fns[self.stats_filter]()
 
-        if self.date_filter == 'all_time':
+        if (self.date_filter == 'all_time') & (self.stats_filter in ['all_stats', 'stoke_meter']):
             self.report_msg += '\nStoke meter stats not available for all time.'
 
         pass
@@ -224,7 +250,7 @@ class Reporting:
     
 if __name__ == '__main__':
 
-    msg = '$420 help'
+    msg = '$420 all_games user_performance Mar22'
 
     cmd_args = msg.split(' ')[1:]
     rep = Reporting(cmd_args)
