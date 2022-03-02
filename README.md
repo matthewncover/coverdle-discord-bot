@@ -1,3 +1,3 @@
 # coverdle-discord-bot
 
-Discord bot that captures scores from Wordle, Worldle, Nerdle, and Quordle posts and presents statistics.
+Discord bot that captures scores from [Wordle](https://www.nytimes.com/games/wordle/index.html), [Worldle](https://worldle.teuteuf.fr/), [Nerdle](https://nerdlegame.com/), and [Quordle](https://www.quordle.com/#/) posts and presents statistics.
