@@ -154,6 +154,8 @@ class CoverdleClient(discord.Client):
 
             self.df.to_csv("./coverdle_data.csv", index=None)
 
+            print(f"{self.game} entry added - {self.author_name} on {self.msg_day}")
+
     async def on_message(self, msg):
 
         self.read_coverdle_data()
