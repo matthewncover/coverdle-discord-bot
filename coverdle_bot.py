@@ -7,7 +7,7 @@ from wordle_reports import Reporting
 import warnings
 warnings.simplefilter('ignore')
 
-id_dict = json.load(open("ids_debug.json"))
+id_dict = json.load(open("ids_aof.json"))
 
 # id_dict = json.load(open("ids_aof.json"))
 

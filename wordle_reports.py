@@ -10,8 +10,7 @@ class Reporting:
 
     def __init__(self, cmd_args:list, df0:pd.DataFrame):
 
-        # try:
-            # self.df0 = pd.read_csv("./coverdle_data.csv")
+        try:
             self.df0 = df0
             self.df0.day = pd.to_datetime(self.df0.day, format='%Y%m%d')
             self.df = self.df0.copy()
@@ -29,12 +28,12 @@ class Reporting:
             self.define_fn_dicts()
 
             self.compile_report()
-        # except:
+        except:
 
-        #     self.report_msg = """\n
-        #     Something has gone wrong. One of us done goofed.
-        #     Type "$420 help" for a list of commands.
-        #     """
+            self.report_msg = """\n
+            Something has gone wrong. One of us done goofed.
+            Type "$420 help" for a list of commands.
+            """
         
     def define_fn_dicts(self):
 
@@ -137,9 +136,17 @@ class Reporting:
 
             return x[x == "X"].shape[0]
 
+        if self.game_filter == 'all_games':
+            self.user_performance_stats_grby = (
+                self.df.groupby('name')
+            )
+        else:
+            self.user_performance_stats_grby = (
+                self.df.groupby(['name', 'game'])
+        )
+
         self.user_performance_stats = (
-            self.df
-            .groupby(['name', 'game'])
+            self.user_performance_stats_grby
             .agg({
                 'score': [pass_mean, typical, 'size', bed_shatting]
             })
@@ -155,8 +162,6 @@ class Reporting:
 
         self.user_performance_stats[("score", "% struggled")] = self.user_performance_stats.percent_struggled.astype(int).astype(str) + " %"
 
-        # self.user_performance_stats.drop(["percent_struggled"], axis=1, inplace=True)
-        
         self.user_performance_stats = self.user_performance_stats[[("score", "num games"), ("score", "avg."), ("score", "typical"), ("score", "% struggled")]]
         self.user_performance_stats.columns = ["num games", "avg.", "typical", "% struggled"]
 
