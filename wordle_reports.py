@@ -242,17 +242,6 @@ class Reporting:
         self.df_pass = self.df[self.df.score != 'X']
         self.df_pass.score = self.df_pass.score.astype(np.float16)
 
-        # self.team_performance_stats = (
-        #     self.df_pass
-        #     .score
-        #     .describe()
-        #     .round(3)
-        #     .loc[
-        #         ["count", "mean", "std",
-        #          "min", "25%", "50%", "75%"]
-        #     ]
-        # )
-
         if self.game_filter == "quordle":
 
             score_array = pd.Series(
@@ -274,9 +263,6 @@ class Reporting:
                 0: "count"
             })
             .sort_values(by="score")
-            # .assign(
-            #     frequency=lambda x: (x['count']/score_array.shape[0])*100,
-            #     )
             .reset_index(drop=True)
         )
 
@@ -292,7 +278,7 @@ class Reporting:
         ])
 
         self.team_performance_stats['bar'] = pd.Series([
-            "="*int(x/score_array.shape[0]*100) for x in self.team_performance_stats["count"]
+            "="*int(x/score_array.shape[0]*50) for x in self.team_performance_stats["count"]
         ])
 
         self.team_performance_stats = (
