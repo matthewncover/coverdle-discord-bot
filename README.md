@@ -16,25 +16,6 @@ Command format:<br>
             all_time, abbreviated month-year (ex. Feb22)<br>
 ### Examples
 
-`$420 worldle stoke_meter Mar22`<br>
-```
-        Worldle: stoke meter (March 2022)
-        
-        ===Stoke Meter===
-        
-┌─────────┬─────────────┐
-│  Name   │ Stoke Level │
-├─────────┼─────────────┤
-│ Matthew │    129 %    │
-│  Chase  │    129 %    │
-│   Ash   │    129 %    │
-│ Miranda │    116 %    │
-│  Delli  │    77 %     │
-│  Nakul  │    51 %     │
-│  Josh   │    25 %     │
-└─────────┴─────────────┘
-```
-
 `$420 wordle team_performance all_time`<br>
 ```
         Wordle: team performance (all time)
@@ -54,5 +35,54 @@ Command format:<br>
 └───────┴──────────────────────────┘
         
 Team win rate: 96.43 %
+        
+```
+`$420 all_games game_popularity (all time)`
+```
+        All games: game popularity (all time)
+        
+        ===Game Popularity===
+        Number of games played (% of total)
+        
+┌─────────┬────────────────────────┐
+│ Game    │ Num Games (% of Total) │
+├─────────┼────────────────────────┤
+│ Wordle  │ 84 (33 %)              │
+│ Worldle │ 75 (29 %)              │
+│ Quordle │ 60 (23 %)              │
+│ Nerdle  │ 33 (13 %)              │
+└─────────┴────────────────────────┘
+        
+```
+`$420 worldle stoke_meter Mar22`<br>
+```
+        Worldle: stoke meter (March 2022)
+        
+        ===Stoke Meter===
+        
+┌─────────┬─────────────┐
+│  Name   │ Stoke Level │
+├─────────┼─────────────┤
+│ Matthew │    129 %    │
+│  Chase  │    129 %    │
+│   Ash   │    129 %    │
+│ Miranda │    116 %    │
+│  Delli  │    77 %     │
+│  Nakul  │    51 %     │
+│  Josh   │    25 %     │
+└─────────┴─────────────┘
+```
+`$420 nerdle user_performance all_time`
+```
+        Nerdle: user performance (all time)
+        
+        ===User Performance===
+        
+                num games  avg. typical % struggled
+name    game                                       
+Ash     Nerdle          8  3.50       5         0 %
+Delli   Nerdle         11  3.36       3         0 %
+Matthew Nerdle          8  3.00       3         0 %
+Miranda Nerdle          6  3.67       4         0 %
         
 ```
