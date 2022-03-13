@@ -7,7 +7,9 @@ from wordle_reports import Reporting
 import warnings
 warnings.simplefilter('ignore')
 
-id_dict = json.load(open("ids_aof.json"))
+id_dict = json.load(open("ids_debug.json"))
+
+# id_dict = json.load(open("ids_aof.json"))
 
 class CoverdleClient(discord.Client):
 
@@ -29,7 +31,8 @@ class CoverdleClient(discord.Client):
                     self.report = self.invalid_command(cmd_arg)
                     return
 
-        self.report_obj = Reporting(self.cmd_args)
+        self.read_coverdle_data()
+        self.report_obj = Reporting(self.cmd_args, self.df)
         self.report = self.report_obj.report_msg
 
     def invalid_command(self, cmd_arg:str):
@@ -78,7 +81,7 @@ class CoverdleClient(discord.Client):
 
     def read_coverdle_data(self):
 
-        self.df = pd.read_csv("./coverdle_data.csv")
+        self.df = pd.read_csv(f"./{id_dict['csv-fn']}")
 
 
     def which_game(self, msg):
