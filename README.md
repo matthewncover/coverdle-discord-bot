@@ -17,16 +17,19 @@ Command format:<br>
 #### Examples
 
 `$420 worldle stoke_meter Mar22`<br>
-        Worldle: stoke meter (March 2022)<br>
-        ===Stoke Meter===<br>
-┌─────────┬─────────────┐<br>
-│  Name   │ Stoke Level │<br>
-├─────────┼─────────────┤<br>
-│ Matthew │    129 %    │<br>
-│  Chase  │    129 %    │<br>
-│   Ash   │    129 %    │<br>
-│ Miranda │    116 %    │<br>
-│  Delli  │    77 %     │<br>
-│  Nakul  │    51 %     │<br>
-│  Josh   │    25 %     │<br>
-└─────────┴─────────────┘<br>
+
+```     Worldle: stoke meter (March 2022)
+        
+        ===Stoke Meter===
+        
+┌─────────┬─────────────┐
+│  Name   │ Stoke Level │
+├─────────┼─────────────┤
+│ Matthew │    129 %    │
+│  Chase  │    129 %    │
+│   Ash   │    129 %    │
+│ Miranda │    116 %    │
+│  Delli  │    77 %     │
+│  Nakul  │    51 %     │
+│  Josh   │    25 %     │
+└─────────┴─────────────┘```
