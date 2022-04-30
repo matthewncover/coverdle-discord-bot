@@ -1,6 +1,9 @@
 import discord
 
 import os, pandas as pd, re, json, numpy as np
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from wordle_reports import Reporting
 
@@ -222,4 +225,5 @@ channel = client.get_channel(id_dict['channel-id'])
 # bot_token = os.environ["BOT_TOKEN"]
 
 # client.run(os.environ["BOT_TOKEN"])
-client.run(id_dict["bot-token"])
+# client.run(id_dict["bot-token"])
+client.run(os.getenv("BOT_TOKEN"))
