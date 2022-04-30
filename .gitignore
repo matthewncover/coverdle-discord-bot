@@ -1,5 +1,5 @@
 # coverdle-discord-bot-specific
-*.json
+ids_debug.json
 *.ipynb_checkpoints
 *.ipynb
 *ideas.txt

@@ -1,0 +1,31 @@
+{
+    "permissions-integer": 34360068096,
+    "client-id": 946603554540503040,
+    "guild-id": 501574514027790346,
+    "channel-id": 944637914481041418,
+    "role-id": 946785544992620617,
+    "csv-fn": "coverdle_data.csv",
+    "emoji-ids": {
+        "white-square": 946818516055646239,
+        "yellow-square": 946818982088957972,
+        "green-square": 946819056026148924
+    },
+    "author-ids": {
+        "matthewncover#0557": "Matthew",
+        "Cover#5104": "Matthew",
+        "boudreaux#1396": "Ash",
+        "dmiranda94#6669": "Miranda",
+        "Delli#0355": "Delli",
+        "nrahaim#9010": "Rahaim",
+        "xxMoonshine69#8787": "Sean",
+        "Joemama1107#0282": "Lachlan",
+        "Chase Moon#8517": "Chase",
+        "motts#5472": "Nakul",
+        "jojohnst#0257": "Josh"
+    },
+    "cmd-args": {
+        "game": ["all_games", "wordle", "worldle", "nerdle", "quordle"],
+        "stats": ["all_stats", "user_performance", "game_popularity", "team_performance", "stoke_meter"],
+        "date": ["all_time"]
+    }
+}
