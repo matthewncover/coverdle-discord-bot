@@ -1,6 +1,6 @@
 import discord
 
-import pandas as pd, re, json, numpy as np
+import os, pandas as pd, re, json, numpy as np
 
 from wordle_reports import Reporting
 
@@ -219,4 +219,7 @@ client = CoverdleClient()
 guild = discord.Guild
 channel = client.get_channel(id_dict['channel-id'])
 
-client.run(id_dict['bot-token'])
+# bot_token = os.environ["BOT_TOKEN"]
+
+# client.run(os.environ["BOT_TOKEN"])
+client.run(id_dict["bot-token"])
