@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 import warnings
 warnings.simplefilter('ignore')
 
-class Reporting:
+class Report:
 
     def __init__(self, cmd_args:list, df0:pd.DataFrame):
 

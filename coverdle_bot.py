@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from wordle_reports import Reporting
+from wordle_reports import Report
 
 import warnings
 warnings.simplefilter('ignore')
@@ -34,7 +34,7 @@ class CoverdleClient(discord.Client):
                     return
 
         self.read_coverdle_data()
-        self.report_obj = Reporting(self.cmd_args, self.df)
+        self.report_obj = Report(self.cmd_args, self.df)
         self.report = self.report_obj.report_msg
 
     def invalid_command(self, cmd_arg:str):
