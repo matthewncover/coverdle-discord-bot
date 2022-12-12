@@ -11,8 +11,7 @@ import warnings
 warnings.simplefilter('ignore')
 
 id_dict = json.load(open("ids_aof.json"))
-
-# id_dict = json.load(open("ids_aof.json"))
+# id_dict = json.load(open("ids_debug.json"))
 
 class CoverdleClient(discord.Client):
 
@@ -92,7 +91,7 @@ class CoverdleClient(discord.Client):
         is_wordle = not not re.search(r'Wordle \d+ (\d{1}|X)[/]6', msg.content)
         is_worldle = not not re.search(r'#Worldle #\d+ (\d{1}|X)[/]6', msg.content)
         is_nerdle = not not re.search(r"nerdlegame \d+ \d{1}[/]6", msg.content)
-        is_quordle = not not re.search(r"Daily Quordle #\d+", msg.content)
+        is_quordle = not not re.search(r"Daily Quordle [#]?\d+", msg.content)
 
         self.rdle_bools = [is_wordle, is_worldle, is_nerdle, is_quordle]
 
@@ -117,7 +116,7 @@ class CoverdleClient(discord.Client):
 
             quordle_message_score_contents = (
                 msg.content[
-                    re.search(r'Daily Quordle #\d+', msg.content).end():
+                    re.search(r'Daily Quordle [#]?\d+', msg.content).end():
                     re.search(r'quordle.com', msg.content).start()
                 ]
                 .replace('\n', '')
@@ -169,7 +168,11 @@ class CoverdleClient(discord.Client):
 
         # first, checks db and updates with history
         self.last_entry = self.df.loc[self.df.shape[0]-1, ['name', 'day', 'game']].values.tolist()
-        hist = msg.channel.history(limit=1000)
+        try:
+            hist = msg.channel.history(limit=1000)
+        except AttributeError:
+            return None
+
         async for h in hist:
 
             if h.author == client.user:
