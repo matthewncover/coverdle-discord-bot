@@ -343,6 +343,6 @@ if __name__ == '__main__':
     msg = '$420 all_games game_popularity all_time'
 
     cmd_args = msg.split(' ')[1:]
-    rep = Reporting(cmd_args)
+    rep = Report(cmd_args)
 
     print(rep.report_msg)
