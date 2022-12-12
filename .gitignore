@@ -4,6 +4,7 @@ ids_debug.json
 *.ipynb
 *ideas.txt
 *.csv
+codes.txt
 discord_tools.txt
 
 # Byte-compiled / optimized / DLL files
